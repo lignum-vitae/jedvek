@@ -1,0 +1,6 @@
+# Rust compiled files
+target/
+
+# IDEs and editors
+.vscode/
+*.code-workspace

@@ -1,2 +1,58 @@
-# jednorozmyerny
-Multidimensional Rust vectors with a 1D footprint
+# Jedvek
+
+Jedvek /jɛdvɛk/ [derived from the Czech jednorozměrný (one-dimensional) + vektor (vector)] is a
+Rust library for multidimensional data structures backed by a contiguous 1D memory footprint.
+
+## Installation
+
+### Via Git Repository (Latest Development Build)
+
+```toml
+[dependencies]
+jedvek = { git = "https://github.com/lignum-vitae/jedvek.git" }
+```
+
+Then run:
+
+`cargo build`
+
+## Matrices
+
+The Matrix2D struct provides a convenient way to use a two-dimensional matrix that is
+a one-dimensional vector under the hood.
+This allows for efficient memory usage while enabling standard matrix operations.
+
+Matrix2D implements a wide range of methods and traits, including:
+
+- Linear Algebra: dot product, inverse, transpose.
+- Arithmetic: Implementations of multiplication by matrices, vectors, and scalars and division by scalars
+- Manipulation: shape, size, full, reshape, map
+- Conversion: from_flat, From, TryFrom
+- Utility: new, max, min, is_empty
+
+## Project layout
+
+Within these crates, the following modules `jedvek::<module name>` are provided
+
+| Module          | Description                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------ |
+|        -        | `Matrix2D` struct and implementations                                                                  |
+| `substitution`  | Backward and forward substitution algorithms                                                           |
+| `decomposition` | Decomposition algorithms including LU decomposition and LU decomposition with partial pivoting         |
+
+### Running Examples
+
+Working examples of the available algorithms as well as a full list of available algorithms can be found in the
+[`examples/`](https://github.com/lignum-vitae/jedvek/tree/main/examples) directory.
+
+Run any example with the following command:
+
+`cargo run --example <example_name>`
+
+Do not include `.rs` when running examples.
+
+## Special Mentions
+
+A special thank you to [Mittei](https://github.com/mittei) for his contributions to the
+[Spindalis project](https://github.com/lignum-vitae/spindalis).
+The `Arr2D` implementation he authored serves as the structural backbone for Jedvek’s `Matrix2D` struct.
