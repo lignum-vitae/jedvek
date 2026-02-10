@@ -228,7 +228,7 @@ impl<T> Matrix2D<T> {
     where
         T: Copy + std::default::Default + std::ops::AddAssign + std::ops::Mul<Output = T>,
     {
-        if self.height == 1 && self.width == 1 || rhs.height == 1 && rhs.width == 2 {
+        if self.height == 1 && self.width == 1 || rhs.height == 1 && rhs.width == 1 {
             let mut matrix = Matrix2D::new();
             let mut scalar = T::default();
             if rhs.height == 1 {
@@ -1121,6 +1121,16 @@ mod tests {
 
         let expected = Matrix2D::from_flat(vec![83, 63, 37, 75], 0, 1, 4).unwrap();
 
+        let res = arr1.dot(&arr2).unwrap();
+        assert_eq!(res, expected);
+    }
+
+    #[test]
+    fn test_vec_mul_vec() {
+        let arr1 = Matrix2D::from_flat(vec![1, 1], 0, 2, 1).unwrap();
+        let arr2 = Matrix2D::from_flat(vec![1, 0], 0, 1, 2).unwrap();
+
+        let expected = Matrix2D::from_flat(vec![1, 0, 1, 0], 0, 2, 2).unwrap();
         let res = arr1.dot(&arr2).unwrap();
         assert_eq!(res, expected);
     }
