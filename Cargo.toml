@@ -8,7 +8,7 @@ repository = "https://github.com/lignum-vitae/jedvek"
 license = "MIT"
 readme = "README.md"
 
-keywords = ["matrix", "matrix manipulation", "multidimensional"]
+keywords = ["matrix", "matrix_manipulation", "multidimensional"]
 
 [lib]
 name = "jedvek"
