@@ -1,9 +1,31 @@
 # Jedvek
 
+[![crates.io](https://img.shields.io/crates/v/jedvek.svg)](https://crates.io/crates/jedvek)
+[![docs.rs](https://docs.rs/jedvek/badge.svg)](https://docs.rs/jedvek)
+[![Build Status](https://github.com/lignum-vitae/jedvek/workflows/Workflow%20Status/badge.svg)](https://github.com/lignum-vitae/jedvek/actions)
+[![GitHub stars](https://img.shields.io/github/stars/lignum-vitae/jedvek?style=social)](https://github.com/lignum-vitae/jedvek/stargazers)
+
 Jedvek /jɛdvɛk/ [derived from the Czech jednorozměrný (one-dimensional) + vektor (vector)] is a
 Rust library for multidimensional data structures backed by a contiguous 1D memory footprint.
 
 ## Installation
+
+Add Jedvek as a dependency in your Cargo.toml:
+
+### Via Crates.io (Recommended)
+
+To use the latest stable release, add jedvek as a dependency:
+
+```toml
+[dependencies]
+jedvek = "0.X.X" # Always use the latest version available on crates.io
+```
+
+Or, use Cargo:
+
+```nginx
+cargo add jedvek
+```
 
 ### Via Git Repository (Latest Development Build)
 
@@ -72,6 +94,7 @@ This project is in the alpha stage. APIs may change without warning until versio
 
 ## Special Mentions
 
-A special thank you to [Mittei](https://github.com/mittei) for his contributions to the
-[Spindalis project](https://github.com/lignum-vitae/jedvek).
-The `Arr2D` implementation he authored serves as the structural backbone for Jedvek’s `Matrix2D` struct.
+A special thank you to [Mittei](https://github.com/mittei) for his contributions
+to the [Spindalis project](https://github.com/lignum-vitae/spindalis).
+The `Arr2D` implementation he authored serves as the structural backbone for
+Jedvek’s `Matrix2D` struct.
