@@ -2,7 +2,8 @@
 
 [![crates.io](https://img.shields.io/crates/v/jedvek.svg)](https://crates.io/crates/jedvek)
 [![docs.rs](https://docs.rs/jedvek/badge.svg)](https://docs.rs/jedvek)
-[![Build Status](https://github.com/lignum-vitae/jedvek/workflows/Workflow%20Status/badge.svg)](https://github.com/lignum-vitae/jedvek/actions)
+[![Build Status](https://github.com/lignum-vitae/jedvek/workflows/Build%20and%20test/badge.svg)](https://github.com/lignum-vitae/jedvek/actions?workflow=Build%20and%20test)
+[![Build Status](https://github.com/lignum-vitae/jedvek/workflows/Clippy%20check%20-%20lint/badge.svg)](https://github.com/lignum-vitae/jedvek/actions?workflow=Clippy%20check%20-%20lint)
 [![GitHub stars](https://img.shields.io/github/stars/lignum-vitae/jedvek?style=social)](https://github.com/lignum-vitae/jedvek/stargazers)
 
 Jedvek /jɛdvɛk/ [derived from the Czech jednorozměrný (one-dimensional) + vektor (vector)] is a
