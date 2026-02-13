@@ -229,8 +229,8 @@ impl<T> Matrix2D<T> {
         T: Copy + std::default::Default + std::ops::AddAssign + std::ops::Mul<Output = T>,
     {
         if self.height == 1 && self.width == 1 || rhs.height == 1 && rhs.width == 1 {
-            let mut matrix = Matrix2D::new();
-            let mut scalar = T::default();
+            let matrix;
+            let scalar;
             if rhs.height == 1 && rhs.width == 1 {
                 matrix = self.clone();
                 scalar = rhs[0][0];
