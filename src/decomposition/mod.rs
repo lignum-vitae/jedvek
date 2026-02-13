@@ -1,5 +1,6 @@
 pub mod lu;
 pub mod plu;
+pub mod qr;
 
 pub use lu::lu_decomposition;
 pub use plu::lu_pivot_decomposition;
@@ -11,6 +12,7 @@ pub enum DecompositionError {
     NonSquareMatrix,
     SingularMatrix,
     InvalidVector(Matrix2DError),
+    InvalidBounds,
 }
 
 impl From<Matrix2DError> for DecompositionError {
