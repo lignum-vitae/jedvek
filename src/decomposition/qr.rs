@@ -23,7 +23,7 @@ fn submatrix(
 ) -> Result<Matrix2D<f64>, Matrix2DError> {
     // Uses 0-indexing
     if hstart > hend || wstart > wend || hend >= matrix.height || wend >= matrix.width {
-        return Err(Matrix2DError::InconsistentRowLengths);
+        return Err(Matrix2DError::OutOfBounds);
     }
 
     // Refactor matrix data
@@ -34,13 +34,7 @@ fn submatrix(
         }
     }
 
-    let result = Matrix2D::from_flat(inner, 0.0, hend - hstart + 1, wend - wstart + 1);
-    if let Ok(result) = result {
-        Ok(result)
-    } else {
-        println!("Error when creating result");
-        Err(Matrix2DError::InconsistentRowLengths)
-    }
+    Matrix2D::from_flat(inner, 0.0, hend - hstart + 1, wend - wstart + 1)
 }
 
 fn sign(entry: f64) -> f64 {
@@ -58,7 +52,7 @@ where
     // but returns a direct result at the end
     let mut matrix: Matrix2D<f64> = matrix.try_into()?;
     if matrix.height < matrix.width {
-        return Err(DecompositionError::NonSquareMatrix);
+        return Err(DecompositionError::InvalidBounds);
     }
 
     let mut q: Matrix2D<f64> = Matrix2D::identity(matrix.height);
