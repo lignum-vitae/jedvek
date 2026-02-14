@@ -1,6 +1,17 @@
 [package]
 name = "jedvek"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
+
+description = "Multidimensional Rust vectors with a 1D footprint"
+repository = "https://github.com/lignum-vitae/jedvek"
+license = "MIT"
+readme = "README.md"
+
+keywords = ["matrix", "matrix_manipulation", "multidimensional"]
+
+[lib]
+name = "jedvek"
+path = "src/lib.rs"
 
 [dependencies]
