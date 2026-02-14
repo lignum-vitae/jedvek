@@ -229,25 +229,19 @@ impl<T> Matrix2D<T> {
         T: Copy + std::default::Default + std::ops::AddAssign + std::ops::Mul<Output = T>,
     {
         if self.height == 1 && self.width == 1 || rhs.height == 1 && rhs.width == 1 {
-            println!("Scalar mult");
-            let mut matrix = Matrix2D::new();
-            let mut scalar = T::default();
-            if rhs.height == 1 {
+            let matrix;
+            let scalar;
+            if rhs.height == 1 && rhs.width == 1 {
                 matrix = self.clone();
                 scalar = rhs[0][0];
-            } else if self.height == 1 {
+            } else {
                 matrix = rhs.clone();
                 scalar = self[0][0];
             }
 
-            println!("Matrix height and width: {}, {}", matrix.height, matrix.width);
-
             let mut result = Matrix2D::full(T::default(), matrix.height, matrix.width);
             for i in 0..matrix.height {
                 for j in 0..matrix.width {
-                    println!(
-                        "result calc"
-                    );
                     result[i][j] = scalar * matrix[i][j];
                 }
             }
@@ -1157,7 +1151,7 @@ mod tests {
         let arr1 = Matrix2D::from_flat(vec![1], 0, 1, 1).unwrap();
         let arr2 = Matrix2D::from_flat(vec![1, 0, 1], 0, 1, 3).unwrap();
 
-        let expected = Matrix2D::from_flat(vec![1, 0, 1], 0, 3, 1).unwrap();
+        let expected = Matrix2D::from_flat(vec![1, 0, 1], 0, 1, 3).unwrap();
         let res = arr1.dot(&arr2).unwrap();
         assert_eq!(res, expected);
     }
