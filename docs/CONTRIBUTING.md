@@ -85,10 +85,10 @@ git remote
 
 ```nginx
 # Creates a new branch that stays in sync with the main repository
-git checkout -b feature-name upstream/main
+git switch -c feature-name upstream/main
 
 # Checks out existing branch if you already have a branch locally
-git checkout feature-name
+git switch feature-name
 ```
 
 #### 6. Make your changes in your local repository
@@ -198,3 +198,4 @@ and inclusive community. If you have any questions, need help, or want to discus
 ideas, feel free to reach out via issues or the repository discussions.
 
 Thank you for contributing to Jedvek! Your help improves the project for everyone!
+
