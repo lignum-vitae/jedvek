@@ -29,8 +29,8 @@ fn submatrix(
     // Refactor matrix data
     let mut inner = Vec::<f64>::new();
     for h in hstart..(hend + 1) {
-        for w in wstart..(wend + 1) {
-            inner.push(matrix[h][w]);
+        for reflection_vec in wstart..(wend + 1) {
+            inner.push(matrix[h][reflection_vec]);
         }
     }
 
@@ -58,46 +58,48 @@ where
     let mut q: Matrix2D<f64> = Matrix2D::identity(matrix.height);
 
     for j in 0..matrix.width {
-        let hvec = submatrix(&matrix, j, matrix.width - 1, j, j).unwrap();
-        let normx = norm(&hvec);
-        let s = -sign(matrix[j][j]);
-        let u1 = matrix[j][j] - s * normx;
-        let mut w = hvec / u1;
+        let column_tail = submatrix(&matrix, j, matrix.width - 1, j, j).unwrap();
+        let column_norm = norm(&column_tail);
+        let reflection_sign = -sign(matrix[j][j]);
+        let reflection_pivot = matrix[j][j] - reflection_sign * column_norm;
+        let mut reflection_vec = column_tail / reflection_pivot;
 
         // I can't currently think of a better way to mutate the first element
         // of an Matrix2D which doesn't have a statically defined size at compile time
-        let w_iter = w.rows_mut();
-        if let Some(row) = w_iter.into_iter().next()
+        let reflection_vec_iter = reflection_vec.rows_mut();
+        if let Some(row) = reflection_vec_iter.into_iter().next()
             && let Some(elem) = row.iter_mut().next()
         {
             *elem = 1_f64;
         }
 
-        let tau = -s * u1 / normx;
+        let tau = -reflection_sign * reflection_pivot / column_norm;
 
-        let r_end = submatrix(&matrix, j, matrix.height - 1, 0, matrix.width - 1).unwrap();
-        let q_end = submatrix(&q, 0, matrix.height - 1, j, matrix.width - 1).unwrap();
+        let r_active_matrix =
+            submatrix(&matrix, j, matrix.height - 1, 0, matrix.width - 1).unwrap();
+        let q_active_matrix = submatrix(&q, 0, matrix.height - 1, j, matrix.width - 1).unwrap();
 
-        let mut tau_w = w.clone();
-        let tau_w_iter = tau_w.rows_mut();
-        for row in tau_w_iter.into_iter() {
+        let mut scaled_reflector_vec = reflection_vec.clone();
+        let scaled_reflector_vec_iter = scaled_reflector_vec.rows_mut();
+        for row in scaled_reflector_vec_iter.into_iter() {
             for elem in row {
                 *elem *= tau;
             }
         }
-        let r_sub_by = (tau_w.clone()) * (w.transpose() * &r_end);
-        let q_sub_by = (q_end * w) * tau_w.transpose();
+        let r_update_term =
+            (scaled_reflector_vec.clone()) * (reflection_vec.transpose() * &r_active_matrix);
+        let q_update_term = (q_active_matrix * reflection_vec) * scaled_reflector_vec.transpose();
 
-        let r_sub_by_shape = r_sub_by.shape();
-        let q_sub_by_shape = q_sub_by.shape();
+        let r_update_term_dim = r_update_term.shape();
+        let q_update_term_dim = q_update_term.shape();
 
         for row in j..matrix.height {
             for col in 0..matrix.width {
-                if row - j < r_sub_by_shape.0 && col < r_sub_by_shape.1 {
-                    matrix[row][col] -= r_sub_by[row - j][col];
+                if row - j < r_update_term_dim.0 && col < r_update_term_dim.1 {
+                    matrix[row][col] -= r_update_term[row - j][col];
                 }
-                if row - j < q_sub_by_shape.1 && col < q_sub_by_shape.0 {
-                    q[col][row] -= q_sub_by[col][row - j];
+                if row - j < q_update_term_dim.1 && col < q_update_term_dim.0 {
+                    q[col][row] -= q_update_term[col][row - j];
                 }
             }
         }
@@ -132,7 +134,7 @@ mod tests {
             for col in 0..matrix.width {
                 if row > col && matrix[row][col].abs() > mat_tol_f64 {
                     return false;
-                } 
+                }
             }
         }
         true
@@ -175,37 +177,58 @@ mod tests {
 
     #[test]
     fn basic_qr() {
-        let matr: Matrix2D<f64> = Matrix2D::from(&[[-1.0, 3.0], [1.0, 5.0]]);
-        let (q, r) = qr_factorization(&matr).unwrap();
-        let expected = &q * &r;
+        let matrix: Matrix2D<f64> = Matrix2D::from(&[[-1.0, 3.0], [1.0, 5.0]]);
+        let (q, r) = qr_factorization(&matrix).unwrap();
+        let original_matrix = &q * &r;
         assert!(check_orthogonal(&q));
         assert!(check_upper_triangular(&r));
-        assert!(equal_within_tol(&matr, &expected));
+        assert!(equal_within_tol(&matrix, &original_matrix));
     }
 
     #[test]
     fn qr_test_3x3() {
-        let matr: Matrix2D<f64> =
+        let matrix: Matrix2D<f64> =
             Matrix2D::from(&[[2.0, -1.0, -2.0], [-4.0, 6.0, -3.0], [-4.0, -2.0, 8.0]]);
-        let (q, r) = qr_factorization(&matr).unwrap();
-        let expected = &q * &r;
+        let (q, r) = qr_factorization(&matrix).unwrap();
+        let original_matrix = &q * &r;
         assert!(check_orthogonal(&q));
         assert!(check_upper_triangular(&r));
-        assert!(equal_within_tol(&matr, &expected));
+        assert!(equal_within_tol(&matrix, &original_matrix));
     }
 
     #[test]
     fn qr_test_4x4() {
-        let matr: Matrix2D<f64> = Matrix2D::from(&[
+        let matrix: Matrix2D<f64> = Matrix2D::from(&[
             [1.0, -1.0, 0.0, 0.0],
             [1.0, 1.0, 1.0, 0.0],
             [0.0, 1.0, 1.0, 1.0],
             [0.0, 0.0, 1.0, 1.0],
         ]);
-        let (q, r) = qr_factorization(&matr).unwrap();
-        let expected = &q * &r;
+        let (q, r) = qr_factorization(&matrix).unwrap();
+        let original_matrix = &q * &r;
         assert!(check_orthogonal(&q));
         assert!(check_upper_triangular(&r));
-        assert!(equal_within_tol(&matr, &expected));
+        assert!(equal_within_tol(&matrix, &original_matrix));
+    }
+
+    #[test]
+    fn qr_test_known_3x3() {
+        // Expected values from https://www.geeksforgeeks.org/machine-learning/qr-decomposition-in-machine-learning/
+        // As noted, QR decomp is not unique all the way down to the signs.
+        // The signs in Q can defer from another implementation as long as the
+        // corresponding sign in R is flipped.
+        // Some implementations enforce a positive diagonal BUT numpy does not.
+        // Similarly, I see no need for us to enforce a positive diagonal in the R matrix.
+        let matrix: Matrix2D<f64> = Matrix2D::from(&[[1., 2., 4.], [0., 0., 5.], [0., 3., 6.]]);
+        let (q, r) = qr_factorization(&matrix).unwrap();
+        let original_matrix = &q * &r;
+        let expected_q: Matrix2D<f64> =
+            Matrix2D::from(&[[-1., 0., 0.], [0., 0., 1.], [0., -1., 0.]]);
+        let expected_r: Matrix2D<f64> =
+            Matrix2D::from(&[[-1., -2., -4.], [0., -3., -6.], [0., 0., 5.]]);
+
+        assert_eq!(expected_q, q);
+        assert_eq!(expected_r, r);
+        assert_eq!(matrix, original_matrix);
     }
 }
