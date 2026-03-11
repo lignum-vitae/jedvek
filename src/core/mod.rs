@@ -23,4 +23,5 @@ pub enum Matrix2DError {
         from: &'static str,
         to: &'static str,
     },
+    OutOfBounds,
 }
