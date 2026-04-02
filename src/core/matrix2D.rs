@@ -4,7 +4,7 @@ use crate::substitution::{back_substitution, forward_substitution};
 use std::{
     any::type_name,
     fmt::{self, Display},
-    ops::{Div, Index, IndexMut, Mul},
+    ops::{Add, Div, Index, IndexMut, Mul},
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Default)]
@@ -35,6 +35,39 @@ impl<T> Matrix2D<T> {
 
     pub fn is_empty(&self) -> bool {
         self.height == 0 || self.width == 0
+    }
+
+    pub fn sum(&self) -> T
+    where
+        T: Add<T, Output = T> + Copy + Default,
+    {
+        self.inner.iter().copied().fold(T::default(), |acc, x| acc + x)
+    }
+
+    pub fn sum_rows(&self) -> Matrix2D<T>
+    where
+        T: Copy + Default + std::iter::Sum,
+    {
+        // This returns a 1 x N matrix (subject to change in the future)
+        let mut output = Matrix2D::full(T::default(), 1, self.height);
+        for (i, row) in self.into_iter().enumerate() {
+            output[0][i] = row.iter().copied().sum::<T>();
+        }
+        output
+    }
+
+    pub fn sum_cols(&self) -> Matrix2D<T>
+    where
+        T: std::ops::AddAssign<T> + Copy + Default,
+    {
+        // This also returns a 1 x N matrix (not subject to change in the future)
+        let mut output = Matrix2D::full(T::default(), 1, self.width);
+        for row in self {
+            for (i, x) in row.into_iter().enumerate() {
+                output[0][i] += *x
+            }
+        }
+        output
     }
 
     pub fn max(&self) -> Option<T>
@@ -1326,5 +1359,67 @@ mod tests {
         ]);
 
         assert_eq!(rounded_result, expected);
+    }
+
+    // --- summation ---
+
+    #[test]
+    fn find_1D_sum() {
+        let matrix = Matrix2D::from(&[[1, 0, 1, 0, 1, 0, 0, 1]]);
+        let result = matrix.sum();
+        let expected = 4;
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn find_2D_sum() {
+        let matrix = Matrix2D::from(&[
+            [1, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0],
+            [1, 1, 0, 1, 1, 0, 1, 0],
+        ]);
+        let result = matrix.sum();
+        let expected = 11;
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn find_1D_row_sum() {
+        let matrix = Matrix2D::from(&[[1, 0, 1, 0, 1, 0, 0, 1]]);
+        let result = matrix.sum_rows();
+        let expected = Matrix2D::from(&[[4]]);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn find_2D_row_sum() {
+        let matrix = Matrix2D::from(&[
+            [1, 0, 1, 0, 1, 0, 0, 1], // 4
+            [1, 0, 0, 0, 1, 0, 0, 0], // 2
+            [1, 1, 0, 1, 1, 0, 1, 0], // 5
+        ]);
+        let result = matrix.sum_rows();
+        let expected = Matrix2D::from(&[[4, 2, 5]]);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn find_1D_col_sum() {
+        let matrix = Matrix2D::from(&[[1, 0, 1, 0, 1, 0, 0, 1]]);
+        let result = matrix.sum_cols();
+        let expected = Matrix2D::from(&[[1, 0, 1, 0, 1, 0, 0, 1]]);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn find_2D_col_sum() {
+        let matrix = Matrix2D::from(&[
+            [1, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0],
+            [1, 1, 0, 1, 1, 0, 1, 0],
+        ]);
+        let result = matrix.sum_cols();
+        let expected = Matrix2D::from(&[[3, 1, 1, 1, 3, 0, 1, 1]]);
+        assert_eq!(result, expected);
     }
 }
