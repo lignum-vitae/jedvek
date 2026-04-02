@@ -41,7 +41,10 @@ impl<T> Matrix2D<T> {
     where
         T: Add<T, Output = T> + Copy + Default,
     {
-        self.inner.iter().copied().fold(T::default(), |acc, x| acc + x)
+        self.inner
+            .iter()
+            .copied()
+            .fold(T::default(), |acc, x| acc + x)
     }
 
     pub fn sum_rows(&self) -> Matrix2D<T>
@@ -63,7 +66,7 @@ impl<T> Matrix2D<T> {
         // This also returns a 1 x N matrix (not subject to change in the future)
         let mut output = Matrix2D::full(T::default(), 1, self.width);
         for row in self {
-            for (i, x) in row.into_iter().enumerate() {
+            for (i, x) in row.iter().enumerate() {
                 output[0][i] += *x
             }
         }
